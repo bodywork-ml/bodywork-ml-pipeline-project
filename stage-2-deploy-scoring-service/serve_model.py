@@ -5,12 +5,21 @@ This module defines what will happen in 'stage-2-deploy-scoring-service':
 - define ML scoring REST API endpoints; and,
 - start service.
 
-The scoring service can be tested from the command line using:
+When running the script locally, the scoring service can be tested from
+the command line using,
 
 curl http://0.0.0.0:5000/iris/v1/score \
     --request POST \
     --header "Content-Type: application/json" \
     --data '{"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}'
+
+The expected response should be,
+
+{
+    "species_prediction":"setosa"
+    "probabilities": "setosa=1.0|versicolor=0.0|virginica=0.0",
+    "model_info": "DecisionTreeClassifier(class_weight='balanced', random_state=42)"
+}
 """
 from urllib.request import urlopen
 from typing import Dict
