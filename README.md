@@ -1,4 +1,8 @@
-# Example Bodywork Machine Learning Operations Project
+![bodywork](https://bodywork-media.s3.eu-west-2.amazonaws.com/website_logo_transparent_background.png)
+
+---
+
+# Bodywork: ML-Ops on k8s
 
 This repository contains a simple Machine Learning Operations (MLOps) project, that demonstrates how a machine learning engineering project needs to configured for deployment to Kubernetes (k8s) using the Bodywork ML-Ops framework.
 
@@ -27,7 +31,7 @@ The `stage-2-deploy-scoring-service/requirements.txt` lists the 3rd party Python
 
 The `bodywork.ini` file in the root of this repository contains the configuration for the whole workflow - a workflow being a collection of stages, run in a specific order as represented by a Directed Acyclic Graph (or DAG). The most important element is the specification of the workflow DAG, which in this instance is simple,
 
-```
+```shell
 DAG = stage-1-train-model >> stage-2-deploy-scoring-service
 ```
 
@@ -37,13 +41,13 @@ i.e. train the model and then (if successful) deploy the scoring service.
 
 Firstly, make sure that the [bodywork](https://pypi.org/project/bodywork/) package has been Pip-installed into a local Python environment. Then, make sure that there is a namespace setup for use by bodywork projects - e.g. by running the following at the command line,
 
-```bash
+```shell
 bodywork setup-namespace iris-classification
 ```
 
 Which should result in the following output,
 
-```bash
+```shell
 creating namespace=iris-classification
 creating service-account=bodywork-workflow-controller in namespace=iris-classification
 creating cluster-role-binding=bodywork-workflow-controller--iris-classification
@@ -52,7 +56,7 @@ creating service-account=bodywork-jobs-and-deployments in namespace=iris-classif
 
 Then, the workflow can be tested by running the workflow-controller locally using,
 
-```bash
+```shell
 bodywork workflow \
     --namespace=iris-classification \
     https://github.com/AlexIoannides/bodywork-example-ml-project \
@@ -61,13 +65,13 @@ bodywork workflow \
 
 Which will run the workflow defined in the `master` branch of this GitHub repository, all within the `iris-classification` namespace. The logs from the workflow-controller and the containers nested within each constituent stage, will be streamed to the command-line to inform you on the precise state of the workflow, but you can also keep track of the current state of all k8s resources created by the workflow-controller in the `iris-classification` namespace, using the kubectl CLI tool - e.g.,
 
-```bash
+```shell
 kubectl -n iris-classification get all
 ```
 
-Once the workflow has completed, the ML scoring service deployed within your cluster can be tested from your local machine, by first of all running `kubectl proxy` in one shell, and then in a new shell running,
+Once the workflow has completed, the ML scoring service deployed within your cluster can be tested from your local machine, by first of all running `kubectl proxy` in one shell, and then in a new shell use the `curl` tool as follows,
 
-```bash
+```shell
 curl http://localhost:8001/api/v1/namespaces/iris-classification/services/bodywork-example-ml-project--stage-2-deploy-scoring-service/proxy/iris/v1/score \
     --request POST \
     --header "Content-Type: application/json" \
@@ -88,7 +92,7 @@ If successful, you should get the following response,
 
 If you're happy with the test results, then you can schedule the workflow-controller to operate remotely on the cluster as a k8s cronjob. For example, to run the workflow every hour use the following command,
 
-```bash
+```shell
 bodywork cronjob create \
     --namespace=iris-classification \
     --name=iris-classification \
@@ -97,9 +101,11 @@ bodywork cronjob create \
     --git-repo-branch=master
 ```
 
+Each scheduled workflow will attempt to re-run the workflow, end-to-end, as defined by the state of this repository's `master` branch at the time of execution, performing rolling-updates to service-deployments and automatic roll-backs in the event of failures.
+
 To get the execution history for all `iris-classification` jobs use,
 
-```bash
+```shell
 bodywork cronjob history \
     --namespace=iris-classification \
     --name=iris-classification
@@ -107,14 +113,14 @@ bodywork cronjob history \
 
 Which should return output along the lines of,
 
-```bash
+```shell
 JOB_NAME                                START_TIME                    COMPLETION_TIME               ACTIVE      SUCCEEDED       FAILED
 iris-classification-1605214260          2020-11-12 20:51:04+00:00     2020-11-12 20:52:34+00:00     0           1               0
 ```
 
 Then to stream the logs from any given cronjob run (e.g. to debug and/or monitor for errors), use,
 
-```bash
+```shell
 bodywork cronjob logs \
     --namespace=iris-classification \
     --name=iris-classification-1605214260
@@ -124,7 +130,7 @@ bodywork cronjob logs \
 
 To clean-up the deployment in its entirety, delete the namespace using kubectl - e.g. by running,
 
-```bash
+```shell
 kubectl delete ns iris-classification
 ```
 
