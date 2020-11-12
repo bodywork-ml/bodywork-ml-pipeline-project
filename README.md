@@ -80,7 +80,7 @@ If successful, you should get the following response,
 {
     "species_prediction":"setosa",
     "probabilities":"setosa=1.0|versicolor=0.0|virginica=0.0",
-    "model_info": "DecisionTreeClassifier(class_weight='balanced', random_state=42)",
+    "model_info": "DecisionTreeClassifier(class_weight='balanced', random_state=42)"
 }
 ```
 
@@ -122,7 +122,7 @@ bodywork cronjob logs \
 
 ## Cleaning Up
 
-To clean-up the deployment in its entirety, delete the namespace using kubectl - e.g. by running 
+To clean-up the deployment in its entirety, delete the namespace using kubectl - e.g. by running,
 
 ```bash
 kubectl delete ns iris-classification
