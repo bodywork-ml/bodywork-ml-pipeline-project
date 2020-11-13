@@ -92,9 +92,9 @@ If successful, you should get the following response,
 }
 ```
 
-## Scheduling the Workflow using Cronjobs
+## Executing the Workflow on a Schedule
 
-If you're happy with the test results, then you can schedule the workflow-controller to operate remotely on the cluster as a k8s cronjob. For example, to run the workflow every hour use the following command,
+If you're happy with the test results, then you can schedule the workflow-controller to operate remotely on the cluster as a k8s cronjob. To setup the the workflow to run every hour, for example, use the following command,
 
 ```text
 bodywork cronjob create \
@@ -105,7 +105,7 @@ bodywork cronjob create \
     --git-repo-branch=master
 ```
 
-Each scheduled workflow will attempt to re-run the workflow, end-to-end, as defined by the state of this repository's `master` branch at the time of execution, performing rolling-updates to service-deployments and automatic roll-backs in the event of failures.
+Each scheduled workflow will attempt to re-run the workflow, end-to-end, as defined by the state of this repository's `master` branch at the time of execution - performing rolling-updates to service-deployments and automatic roll-backs in the event of failure.
 
 To get the execution history for all `iris-classification` jobs use,
 
