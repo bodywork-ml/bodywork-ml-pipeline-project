@@ -2,7 +2,7 @@
 
 ---
 
-# Bodywork: ML-Ops on k8s
+# ML-Ops on k8s using Bodywork
 
 This repository contains a simple Machine Learning Operations (MLOps) project, that demonstrates how to configure a machine learning solution for deployment to Kubernetes (k8s) using the Bodywork ML-Ops framework.
 
