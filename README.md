@@ -25,7 +25,7 @@ The `stage-1-train-model` directory contains the code and configuration required
 
 The `requirements.txt` file lists the 3rd party Python packages that will be Pip-installed on the pre-built Bodywork host container, as required to run the `train_model.py` script. Finally, the `config.ini` file allows us to specify that this stage is a batch stage (as opposed to a service-deployment), that `train_model.py` should be the script that is run, as well as an estimate of the CPU and memory resources to request from the k8s cluster, how long to wait and how many times to retry, etc.
 
-## Configuring a Bodywork service-deployment Stage for Creating a ML Scoring Service
+## Configuring a Bodywork Service-Deployment Stage for Creating a ML Scoring Service
 
 The `stage-2-deploy-scoring-service` directory contains the code and configuration required to load the model trained in `stage-1-train-model` and use it as part of the code for a RESTful API endpoint definition, that will accept a single instance (or row) of data encoded as JSON in a HTTP request, and return the model's prediction as JSON data in the corresponding HTTP response. We have decided to chose the Python [Flask](https://flask.palletsprojects.com/en/1.1.x/) framework with which to create our REST API server, which will be deployed to k8s and exposed as a service on the cluster, after this stage completes. The use of Flask is **not** a requirement in any way and you are free to use different frameworks - e.g. [FastAPI](https://fastapi.tiangolo.com).
 
