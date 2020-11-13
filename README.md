@@ -63,7 +63,7 @@ Then, the workflow can be tested by running the workflow-controller locally usin
 ```text
 bodywork workflow \
     --namespace=iris-classification \
-    https://github.com/AlexIoannides/bodywork-example-ml-project \
+    https://github.com/AlexIoannides/bodywork-ml-ops-project \
     master
 ```
 
@@ -76,7 +76,7 @@ kubectl -n iris-classification get all
 Once the workflow has completed, the ML scoring service deployed within your cluster can be tested from your local machine, by first of all running `kubectl proxy` in one shell, and then in a new shell use the `curl` tool as follows,
 
 ```text
-curl http://localhost:8001/api/v1/namespaces/iris-classification/services/bodywork-example-ml-project--stage-2-deploy-scoring-service/proxy/iris/v1/score \
+curl http://localhost:8001/api/v1/namespaces/iris-classification/services/bodywork-ml-ops-project--stage-2-deploy-scoring-service/proxy/iris/v1/score \
     --request POST \
     --header "Content-Type: application/json" \
     --data '{"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}'
@@ -101,7 +101,7 @@ bodywork cronjob create \
     --namespace=iris-classification \
     --name=iris-classification \
     --schedule="0 * * * *" \
-    --git-repo-url=https://github.com/AlexIoannides/bodywork-example-ml-project
+    --git-repo-url=https://github.com/AlexIoannides/bodywork-ml-ops-project
     --git-repo-branch=master
 ```
 

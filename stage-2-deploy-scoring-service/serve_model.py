@@ -29,7 +29,7 @@ from flask import Flask, jsonify, make_response, request, Response
 from joblib import load
 from sklearn.base import BaseEstimator
 
-MODEL_URL = 'http://bodywork-example-ml-project.s3.eu-west-2.amazonaws.com/iris_tree_classifier.joblib'
+MODEL_URL = 'http://bodywork-ml-ops-project.s3.eu-west-2.amazonaws.com/iris_tree_classifier.joblib'
 CLASS_TO_SPECIES_MAP = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
 
 app = Flask(__name__)
