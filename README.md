@@ -110,7 +110,7 @@ Then to stream the logs from any given cronjob run (e.g. to debug and/or monitor
 ```shell
 $ bodywork cronjob logs \
     --namespace=ml-pipeline \
-    --name=score-train-and-deploy-1605214260
+    --name=train-and-deploy-1605214260
 ```
 
 ## Cleaning Up
