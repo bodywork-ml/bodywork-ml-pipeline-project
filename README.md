@@ -2,87 +2,68 @@
 
 ---
 
-# ML-Ops on k8s using Bodywork
+# Machine Learning Pipelines on k8s using Bodywork
 
-This repository contains a simple Machine Learning Operations (MLOps) project, that demonstrates how to configure a machine learning solution for deployment to Kubernetes (k8s) using the Bodywork ML-Ops framework.
+This repository contains a Bodywork project that demonstrates how to run a ML pipeline on Kubernetes (k8s), with Bodywork. The example ML pipeline has two stages:
 
-## Prerequisites
+1. Run a batch job to train a model.
+2. Deploy the trained model as service with a REAST API.
 
-If you want to execute the examples below, then you will need to have access to a k8s cluster via the kubectl CLI tool, preferably with authorisation as an admin user. Bodywork is optimised for k8s v1.16 and Python 3.7.
+To run this project, follow the steps below.
 
-## A Machine Learning Task
+## Get Access to a Kubernetes Cluster
 
-The Machine Learning (ML) problem we have chosen to use for this example, is the classification of iris plants into one of their three sub-species using the [iris plants dataset](https://scikit-learn.org/stable/datasets/index.html#iris-dataset). The [ml_prototype_work.ipynb](https://github.com/bodywork-ml/bodywork-ml-ops-project/blob/master/ml_prototype_work.ipynb) notebook found in the root of this repository, documents the trivial ML workflow used to train a Decision Tree classifier for this multi-class classification task, as well as to prototype some of the work that will be required to engineer and deploy the final prediction (or scoring) service.
+In order to run this example project you will need access to a k8s cluster. To setup a single-node test cluster on your local machine you can use [minikube](https://minikube.sigs.k8s.io/docs/) or [docker-for-desktop](https://www.docker.com/products/docker-desktop). Check your access to k8s by running,
 
-## Configuring a Bodywork Batch Stage for Training the Model
-
-The `stage-1-train-model` directory contains the code and configuration required to train the model within a pre-built container on a k8s cluster, as a batch workload. Using the `ml_prototype_work.ipynb` notebook as a reference, the `train_model.py` module contains the code required to:
-
-- download data from an AWS S3 bucket;
-- pre-process the data (e.g. extract labels for supervised learning);
-- train the model and compute performance metrics; and,
-- persist the model to the same AWS S3 bucket that contains the original data.
-
-The `requirements.txt` file lists the 3rd party Python packages that will be Pip-installed on the pre-built Bodywork host container, as required to run the `train_model.py` script. Finally, the `config.ini` file allows us to specify that this stage is a batch stage (as opposed to a service-deployment), that `train_model.py` should be the script that is run, as well as an estimate of the CPU and memory resources to request from the k8s cluster, how long to wait and how many times to retry, etc.
-
-## Configuring a Bodywork Service-Deployment Stage for Creating a ML Scoring Service
-
-The `stage-2-deploy-scoring-service` directory contains the code and configuration required to load the model trained in `stage-1-train-model` and use it as part of the code for a RESTful API endpoint definition, that will accept a single instance (or row) of data encoded as JSON in a HTTP request, and return the model's prediction as JSON data in the corresponding HTTP response. We have decided to chose the Python [Flask](https://flask.palletsprojects.com/en/1.1.x/) framework with which to create our REST API server, which will be deployed to k8s and exposed as a service on the cluster, after this stage completes. The use of Flask is **not** a requirement in any way and you are free to use different frameworks - e.g. [FastAPI](https://fastapi.tiangolo.com).
-
-Within this stage's directory, `requirements.txt` lists the 3rd party Python packages that will be Pip-installed on the Bodywork host container in order to run `serve_model.py`, which defines the REST API server containing our ML scoring endpoint. The `config.ini` file allows us to specify that this stage is a service-deployment stage (as opposed to a batch stage), that `serve_model.py` should be the script that is run, as well as an estimate of the CPU and memory resources to request from the k8s cluster, how long to wait for the service to start-up and be 'ready', which port to expose and how many instances (or replicas) of the server should be created to stand-behind the cluster-service.
-
-## Configuring the Complete Bodywork Workflow
-
-The `bodywork.ini` file in the root of this repository contains the configuration for the whole workflow - a workflow being a collection of stages, run in a specific order, that can be represented by a Directed Acyclic Graph (or DAG). The most important element is the specification of the workflow DAG, which in this instance is simple,
-
-```text
-DAG = stage-1-train-model >> stage-2-deploy-scoring-service
+```shell
+$ kubectl cluster-info
 ```
 
-i.e. train the model and then (if successful) deploy the scoring service.
+Which should return the details of your cluster.
 
-## Testing the Workflow
+## Install the Bodywork Python Package
 
-Firstly, make sure that the [bodywork](https://pypi.org/project/bodywork/) package has been Pip-installed into a local Python environment that is active. Then, make sure that there is a namespace setup for use by bodywork projects - e.g. `iris-classification` - by running the following at the command line,
-
-```text
-bodywork setup-namespace iris-classification
+```shell
+$ pip install bodywork
 ```
 
-Which should result in the following output,
+## Setup a Kubernetes Namespace for use with Bodywork
 
-```text
-creating namespace=iris-classification
-creating service-account=bodywork-workflow-controller in namespace=iris-classification
-creating cluster-role-binding=bodywork-workflow-controller--iris-classification
-creating service-account=bodywork-jobs-and-deployments in namespace=iris-classification
+```shell
+$ bodywork setup-namespace ml-pipeline
 ```
 
-Then, the workflow can be tested by running the workflow-controller locally using,
+## Run the ML Pipeline
 
-```text
-bodywork workflow \
-    --namespace=iris-classification \
-    https://github.com/bodywork-ml/bodywork-ml-ops-project \
+To test the ML pipeline, using a workflow-controller running on your local machine and interacting with your k8s cluster, run,
+
+```shell
+$ bodywork workflow \
+    --namespace=ml-pipeline \
+    https://github.com/bodywork-ml/bodywork-ml-pipeline-project \
     master
 ```
 
-Which will run the workflow defined in the `master` branch of this GitHub repository, all within the `iris-classification` namespace. The logs from the workflow-controller and the containers nested within each constituent stage, will be streamed to the command-line to inform you on the precise state of the workflow, but you can also keep track of the current state of all k8s resources created by the workflow-controller in the `iris-classification` namespace, by using the kubectl CLI tool - e.g.,
+The workflow-controller logs will be streamed to your shell's standard output until the job has been successfully completed.
 
-```text
-kubectl -n iris-classification get all
+## Testing the Model-Scoring Service
+
+Service deployments are accessible via HTTP from within the cluster - they are not exposed to the public internet. To test a service from your local machine you will first of all need to start a proxy server to enable access to your cluster. This can be achieved by issuing the following command,
+
+```shell
+$ kubectl proxy
 ```
 
-Once the workflow has completed, the ML scoring service deployed within your cluster can be tested from your local machine, by first of all running `kubectl proxy` in one shell, and then in a new shell use the `curl` tool as follows,
+Then in a new shell, you can use the curl tool to test the service. For example,
 
-```text
-curl http://localhost:8001/api/v1/namespaces/iris-classification/services/bodywork-ml-ops-project--stage-2-deploy-scoring-service/proxy/iris/v1/score \
+```shell
+$ curl http://localhost:8001/api/v1/namespaces/ml-pipeline/services/bodywork-ml-pipeline-project--stage-2-deploy-scoring-service/proxy/iris/v1/score \
     --request POST \
     --header "Content-Type: application/json" \
     --data '{"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}'
 ```
 
-If successful, you should get the following response,
+Should return,
 
 ```json
 {
@@ -92,52 +73,56 @@ If successful, you should get the following response,
 }
 ```
 
-## Executing the Workflow on a Schedule
+According to how the payload has been defined in the `stage-2-deploy-scoring-service/serve_model.py` module.
 
-If you're happy with the test results, then you can schedule the workflow-controller to operate remotely on the cluster as a k8s cronjob. To setup the the workflow to run every hour, for example, use the following command,
+## Running the ML Pipeline on a Schedule
 
-```text
-bodywork cronjob create \
-    --namespace=iris-classification \
-    --name=iris-classification \
+If you're happy with the test results, you can schedule the workflow-controller to operate remotely on the cluster on a pre-defined schedule. For example, to setup the the workflow to run every hour, use the following command,
+
+```shell
+$ bodywork cronjob create \
+    --namespace=ml-pipeline \
+    --name=train-and-deploy \
     --schedule="0 * * * *" \
-    --git-repo-url=https://github.com/bodywork-ml/bodywork-ml-ops-project
+    --git-repo-url=https://github.com/bodywork-ml/bodywork-ml-pipeline-project
     --git-repo-branch=master
 ```
 
-Each scheduled workflow will attempt to re-run the workflow, end-to-end, as defined by the state of this repository's `master` branch at the time of execution - performing rolling-updates to service-deployments and automatic roll-backs in the event of failure.
+Each scheduled workflow will attempt to re-run the batch-job, as defined by the state of this repository's `master` branch at the time of execution.
 
-To get the execution history for all `iris-classification` jobs use,
+To get the execution history for all `train-and-deploy` jobs use,
 
-```text
-bodywork cronjob history \
-    --namespace=iris-classification \
-    --name=iris-classification
+```shell
+$ bodywork cronjob history \
+    --namespace=ml-pipeline \
+    --name=train-and-deploy \
 ```
 
 Which should return output along the lines of,
 
 ```text
 JOB_NAME                                START_TIME                    COMPLETION_TIME               ACTIVE      SUCCEEDED       FAILED
-iris-classification-1605214260          2020-11-12 20:51:04+00:00     2020-11-12 20:52:34+00:00     0           1               0
+train-and-deploy-1605214260             2020-11-12 20:51:04+00:00     2020-11-12 20:52:34+00:00     0           1               0
 ```
 
 Then to stream the logs from any given cronjob run (e.g. to debug and/or monitor for errors), use,
 
-```text
-bodywork cronjob logs \
-    --namespace=iris-classification \
-    --name=iris-classification-1605214260
+```shell
+$ bodywork cronjob logs \
+    --namespace=ml-pipeline \
+    --name=score-train-and-deploy-1605214260
 ```
 
 ## Cleaning Up
 
 To clean-up the deployment in its entirety, delete the namespace using kubectl - e.g. by running,
 
-```text
-kubectl delete ns iris-classification
+```shell
+$ kubectl delete ns ml-pipeline
 ```
 
-## Where to go from Here
+## Make this Project Your Own
 
-Read the official Bodywork documentation (coming soon)!
+This repository is a [GitHub template repository](https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) that can be automatically copied into your own GitHub account by clicking the `Use this template` button above.
+
+After you've cloned the template project, use official [Bodywork documentation](https://bodywork.readthedocs.io/en/latest/) to help modify the project to meet your own requirements.
