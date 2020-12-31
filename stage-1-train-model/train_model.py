@@ -19,9 +19,9 @@ from sklearn.metrics import f1_score, balanced_accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
-DATA_URL = ('http://bodywork-ml-ops-project.s3.eu-west-2.amazonaws.com'
+DATA_URL = ('http://bodywork-ml-pipeline-project.s3.eu-west-2.amazonaws.com'
             '/data/iris_classification_data.csv')
-TRAINED_MODEL_AWS_BUCKET = 'bodywork-ml-ops-project'
+TRAINED_MODEL_AWS_BUCKET = 'bodywork-ml-pipeline-project'
 TRAINED_MODEL_FILENAME = 'iris_tree_classifier.joblib'
 
 
