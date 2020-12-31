@@ -84,7 +84,7 @@ $ bodywork cronjob create \
     --namespace=ml-pipeline \
     --name=train-and-deploy \
     --schedule="0 * * * *" \
-    --git-repo-url=https://github.com/bodywork-ml/bodywork-ml-pipeline-project
+    --git-repo-url=https://github.com/bodywork-ml/bodywork-ml-pipeline-project \
     --git-repo-branch=master
 ```
 
@@ -95,7 +95,7 @@ To get the execution history for all `train-and-deploy` jobs use,
 ```shell
 $ bodywork cronjob history \
     --namespace=ml-pipeline \
-    --name=train-and-deploy \
+    --name=train-and-deploy
 ```
 
 Which should return output along the lines of,
