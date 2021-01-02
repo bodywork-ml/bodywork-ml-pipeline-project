@@ -1,13 +1,11 @@
+# Deploy Machine Learning Pipelines on Kubernetes with Bodywork
+
 ![bodywork](https://bodywork-media.s3.eu-west-2.amazonaws.com/ml_pipeline.png)
-
----
-
-# Machine Learning Pipelines on k8s using Bodywork
 
 This repository contains a Bodywork project that demonstrates how to run a ML pipeline on Kubernetes (k8s), with Bodywork. The example ML pipeline has two stages:
 
 1. Run a batch job to train a model.
-2. Deploy the trained model as service with a REAST API.
+2. Deploy the trained model as service with a REST API.
 
 To run this project, follow the steps below.
 
