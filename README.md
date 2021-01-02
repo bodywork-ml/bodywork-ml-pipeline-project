@@ -1,4 +1,4 @@
-# Deploy Machine Learning Pipelines on Kubernetes with Bodywork
+# Machine Learning Pipelines on Kubernetes with Bodywork
 
 ![bodywork](https://bodywork-media.s3.eu-west-2.amazonaws.com/ml_pipeline.png)
 
