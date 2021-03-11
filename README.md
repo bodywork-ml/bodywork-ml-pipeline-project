@@ -46,7 +46,7 @@ The workflow-controller logs will be streamed to your shell's standard output un
 
 ## Testing the Model-Scoring Service
 
-Service deployments are accessible via HTTP from within the cluster - they are not exposed to the public internet. To test a service from your local machine you will first of all need to start a proxy server to enable access to your cluster. This can be achieved by issuing the following command,
+Service deployments are accessible via HTTP from within the cluster - they are not exposed to the public internet, unless you have [installed an ingress controller](https://bodywork.readthedocs.io/en/latest/kubernetes/#configuring-ingress) in your cluster. The simplest way to test a service from your local machine, is by using a local proxy server to enable access to your cluster. This can be achieved by issuing the following command,
 
 ```shell
 $ kubectl proxy
@@ -72,6 +72,17 @@ Should return,
 ```
 
 According to how the payload has been defined in the `stage-2-deploy-scoring-service/serve_model.py` module.
+
+If an ingress controller is operational in your cluster, then the service can be tested via the public internet using,
+
+```shell
+$ curl http://YOUR_CLUSTERS_EXTERNAL_IP/ml-pipeline/bodywork-ml-pipeline-project--stage-2-deploy-scoring-service/iris/v1/score \
+    --request POST \
+    --header "Content-Type: application/json" \
+    --data '{"sepal_length": 5.1, "sepal_width": 3.5, "petal_length": 1.4, "petal_width": 0.2}'
+```
+
+See [here](https://bodywork.readthedocs.io/en/latest/kubernetes/#connecting-to-the-cluster) for instruction on how to retrieve `YOUR_CLUSTERS_EXTERNAL_IP`.
 
 ## Running the ML Pipeline on a Schedule
 
