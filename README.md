@@ -36,10 +36,12 @@ $ bodywork setup-namespace ml-pipeline
 To test the ML pipeline, using a workflow-controller running on your local machine and interacting with your Kubernetes cluster, run,
 
 ```shell
-$ bodywork workflow \
+$ bodywork deployment create \
     --namespace=ml-pipeline \
-    https://github.com/bodywork-ml/bodywork-ml-pipeline-project \
-    master
+    --name=test-deployment \
+    --git-repo-url=https://github.com/bodywork-ml/bodywork-ml-pipeline-project \
+    --git-repo-branch=master \
+    --local-workflow-controller
 ```
 
 The workflow-controller logs will be streamed to your shell's standard output until the job has been successfully completed.

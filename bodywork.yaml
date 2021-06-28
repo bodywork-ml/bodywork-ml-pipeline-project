@@ -5,7 +5,7 @@ project:
   DAG: stage_1_train_model >> stage_2_scoring_service
 stages:
   stage_1_train_model:
-    executable_module_path: stage_1_train_model/train_model.py
+    executable_module_path: pipeline/train_model.py
     requirements:
       - boto3==1.16.15
       - joblib==0.17.0
@@ -17,7 +17,7 @@ stages:
       max_completion_time_seconds: 30
       retries: 2
   stage_2_scoring_service:
-    executable_module_path: stage_2_scoring_service/serve_model.py
+    executable_module_path: pipeline/serve_model.py
     requirements:
       - Flask==1.1.2
       - joblib==0.17.0
