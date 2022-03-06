@@ -1,5 +1,5 @@
-version: "1.0"
-project:
+version: "1.1"
+pipeline:
   name: bodywork-ml-pipeline-project
   docker_image: bodyworkml/bodywork-core:latest
   DAG: stage_1_train_model >> stage_2_scoring_service
