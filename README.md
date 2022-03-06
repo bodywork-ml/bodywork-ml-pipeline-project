@@ -19,7 +19,7 @@ $ pip install bodywork
 
 ## Run the ML Pipeline
 
-To test the pipeline run,
+To test the pipeline defined in thie repository run,
 
 ```shell
 $ bodywork create deployment https://github.com/bodywork-ml/bodywork-ml-pipeline-project
