@@ -7,10 +7,10 @@ stages:
   stage_1_train_model:
     executable_module_path: pipeline/train_model.py
     requirements:
-      - boto3==1.16.15
-      - joblib==0.17.0
-      - pandas==1.1.4
-      - scikit-learn==0.23.2
+      - boto3==1.21.14
+      - joblib==1.1.0
+      - pandas==1.4.1
+      - scikit-learn==1.0.2
     cpu_request: 0.5
     memory_request_mb: 100
     batch:
@@ -19,10 +19,11 @@ stages:
   stage_2_scoring_service:
     executable_module_path: pipeline/serve_model.py
     requirements:
-      - Flask==1.1.2
-      - joblib==0.17.0
-      - numpy==1.19.4
-      - scikit-learn==0.23.2
+      - flask==1.1.4
+      - markupsafe==2.0.1
+      - joblib==1.1.0
+      - numpy==1.22.3
+      - scikit-learn==1.0.2
     cpu_request: 0.25
     memory_request_mb: 100
     service:
