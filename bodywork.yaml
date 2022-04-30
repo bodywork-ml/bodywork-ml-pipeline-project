@@ -4,7 +4,7 @@ pipeline:
   docker_image: bodyworkml/bodywork-core:latest
   DAG: stage_1_train_model >> stage_2_scoring_service
 stages:
-  train_model:
+  stage_1_train_model:
     executable_module_path: pipeline/train_model.py
     requirements:
       - boto3==1.21.14
@@ -16,7 +16,7 @@ stages:
     batch:
       max_completion_time_seconds: 30
       retries: 2
-  serve_model:
+  stage_2_scoring_service:
     executable_module_path: pipeline/serve_model.py
     requirements:
       - flask==1.1.4
