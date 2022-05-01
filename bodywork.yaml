@@ -28,7 +28,7 @@ stages:
     service:
       max_startup_time_seconds: 60
       replicas: 2
-      port: 8000
+      port: 5000
       ingress: true
 logging:
   log_level: INFO
