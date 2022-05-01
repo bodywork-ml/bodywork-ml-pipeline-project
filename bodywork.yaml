@@ -19,8 +19,7 @@ stages:
   stage_2_scoring_service:
     executable_module_path: pipeline/serve_model.py
     requirements:
-      - flask==1.1.4
-      - markupsafe==2.0.1
+      - flask==2.1.2
       - joblib==1.1.0
       - numpy==1.22.3
       - scikit-learn==1.0.2
