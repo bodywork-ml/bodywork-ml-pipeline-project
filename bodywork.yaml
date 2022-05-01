@@ -14,7 +14,7 @@ stages:
     cpu_request: 0.5
     memory_request_mb: 100
     batch:
-      max_completion_time_seconds: 30
+      max_completion_time_seconds: 60
       retries: 2
   stage_2_scoring_service:
     executable_module_path: pipeline/serve_model.py
@@ -27,7 +27,7 @@ stages:
     cpu_request: 0.25
     memory_request_mb: 100
     service:
-      max_startup_time_seconds: 30
+      max_startup_time_seconds: 60
       replicas: 2
       port: 8000
       ingress: true
