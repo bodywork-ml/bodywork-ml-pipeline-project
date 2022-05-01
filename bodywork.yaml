@@ -14,20 +14,19 @@ stages:
     cpu_request: 0.5
     memory_request_mb: 100
     batch:
-      max_completion_time_seconds: 30
+      max_completion_time_seconds: 60
       retries: 2
   stage_2_scoring_service:
     executable_module_path: pipeline/serve_model.py
     requirements:
-      - flask==1.1.4
-      - markupsafe==2.0.1
+      - flask==2.1.2
       - joblib==1.1.0
       - numpy==1.22.3
       - scikit-learn==1.0.2
     cpu_request: 0.25
     memory_request_mb: 100
     service:
-      max_startup_time_seconds: 30
+      max_startup_time_seconds: 60
       replicas: 2
       port: 5000
       ingress: true
